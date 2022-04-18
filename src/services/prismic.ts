@@ -1,10 +1,24 @@
-import Prismic from '@prismicio/client';
-import { DefaultClient } from '@prismicio/client/types/client';
+import * as prismic from '@prismicio/client';
+import { HttpRequestLike } from '@prismicio/client';
+import * as prismicNext from '@prismicio/next';
 
-export function getPrismicClient(req?: unknown): DefaultClient {
-  const prismic = Prismic.client(process.env.PRISMIC_API_ENDPOINT, {
-    req,
+import sm from '../../sm.json';
+
+export interface PreviewDataProps {
+  previewData?: any;
+  req?: HttpRequestLike;
+}
+
+export const createClient = (config: PreviewDataProps): prismic.Client => {
+  const client = prismic.createClient(sm.apiEndpoint, {
+    accessToken: process.env.PRISMIC_ACCESS_TOKEN,
   });
 
-  return prismic;
-}
+  prismicNext.enableAutoPreviews({
+    client,
+    previewData: config.previewData,
+    req: config.req,
+  });
+
+  return client;
+};
