@@ -10,6 +10,7 @@ import { createClient, PreviewDataProps } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import Header from '../components/Header';
 
 interface Post {
   uid?: string;
@@ -35,12 +36,24 @@ export default function Home({ postsPagination }): JSX.Element {
   const [posts, setPosts] = useState(postsPagination.results);
   const [nextPage, setNextPage] = useState(postsPagination.hasNextPage);
 
+  async function handleNextPage(): Promise<void> {
+    if (!nextPage) return;
+
+    const response = await fetch(nextPage);
+
+    const data = await response.json();
+
+    const newPosts = data.results;
+
+    setPosts([...posts, ...newPosts]);
+
+    setNextPage(data.next_page);
+  }
+
   return (
     <>
       <div className={`${commonStyles.maxWidth} ${styles.container}`}>
-        <header className={styles.header}>
-          <img src="assets/logos/logo.svg" alt="logo" />
-        </header>
+        <Header />
 
         <main className={styles.content}>
           <div className={styles.posts}>
@@ -68,7 +81,7 @@ export default function Home({ postsPagination }): JSX.Element {
             <button
               type="button"
               className={styles.button}
-              onClick={() => console.log('hello')}
+              onClick={handleNextPage}
             >
               Carregar mais posts
             </button>
