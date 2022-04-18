@@ -6,7 +6,7 @@ import { FiCalendar, FiUser } from 'react-icons/fi';
 import format from 'date-fns/format';
 import ptBR from 'date-fns/locale/pt-BR';
 
-import { createClient, PreviewDataProps } from '../services/prismic';
+import { getPrismicClient, PreviewDataProps } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
@@ -32,9 +32,24 @@ interface HomeProps {
   previewData: PreviewDataProps;
 }
 
+const formatPost = (posts: Post[]): Post[] => {
+  const result = posts.map(item => ({
+    ...item,
+    first_publication_date: format(
+      new Date(item.first_publication_date),
+      "dd MMM' 'yyyy",
+      {
+        locale: ptBR,
+      }
+    ),
+  }));
+  return result;
+};
+
 export default function Home({ postsPagination }): JSX.Element {
-  const [posts, setPosts] = useState(postsPagination.results);
-  const [nextPage, setNextPage] = useState(postsPagination.hasNextPage);
+  const formattedPosts = formatPost(postsPagination.results);
+  const [posts, setPosts] = useState(formattedPosts);
+  const [nextPage, setNextPage] = useState(postsPagination.next_page);
 
   async function handleNextPage(): Promise<void> {
     if (!nextPage) return;
@@ -43,7 +58,7 @@ export default function Home({ postsPagination }): JSX.Element {
 
     const data = await response.json();
 
-    const newPosts = data.results;
+    const newPosts = formatPost(data.results);
 
     setPosts([...posts, ...newPosts]);
 
@@ -93,18 +108,12 @@ export default function Home({ postsPagination }): JSX.Element {
 }
 
 export const getStaticProps: GetStaticProps = async ({ previewData }) => {
-  const prismic = createClient({ previewData });
+  const prismic = getPrismicClient({ previewData });
   const response = await prismic.getByType('posts', { pageSize: 2 });
 
   const posts = response.results.map(post => ({
     uid: post.uid,
-    first_publication_date: format(
-      new Date(post.first_publication_date),
-      "dd MMM' 'yyyy",
-      {
-        locale: ptBR,
-      }
-    ),
+    first_publication_date: post.first_publication_date,
     data: {
       title: post.data.title,
       subtitle: post.data.subtitle,
@@ -114,7 +123,7 @@ export const getStaticProps: GetStaticProps = async ({ previewData }) => {
 
   const postsPagination = {
     results: posts,
-    hasNextPage: response.next_page,
+    next_page: response.next_page,
   };
 
   return {

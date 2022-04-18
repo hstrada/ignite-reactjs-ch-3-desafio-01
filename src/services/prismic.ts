@@ -9,7 +9,7 @@ export interface PreviewDataProps {
   req?: HttpRequestLike;
 }
 
-export const createClient = (config: PreviewDataProps): prismic.Client => {
+export const getPrismicClient = (config: PreviewDataProps): prismic.Client => {
   const client = prismic.createClient(sm.apiEndpoint, {
     accessToken: process.env.PRISMIC_ACCESS_TOKEN,
   });
