@@ -2,7 +2,7 @@
 
 ignews
 
-![ignews image preview](https://github.com/hstrada/ignite-reactjs-ch-2-desafio-01/blob/master/.github/assets/ignews.png?raw=true)
+![ignews image preview](https://github.com/hstrada/ignite-reactjs-ch-3-desafio-01/blob/master/.github/assets/ignews.png?raw=true)
 
 ---
 ## 👨‍💻️ Technologies Used
