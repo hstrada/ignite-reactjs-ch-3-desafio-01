@@ -1,6 +1,6 @@
-# ignews
+# spacetravelling
 
-ignews
+spacetravelling
 
 ![ignews image preview](https://github.com/hstrada/ignite-reactjs-ch-3-desafio-01/blob/master/.github/assets/ignews.png?raw=true)
 
